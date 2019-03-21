@@ -7,8 +7,6 @@ import org.apache.shiro.subject.Subject;
 import org.junit.Test;
 import pro.zyyz.realm.CustomRealm;
 
-import java.sql.SQLOutput;
-
 public class CustomRealmDemo {
 
     @Test
