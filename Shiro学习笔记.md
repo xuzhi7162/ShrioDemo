@@ -20,7 +20,7 @@ Apache Shiro是一个强大而灵活的开源安全框架，他干净利落的�
 
 ## Shrio框架重点组成
 
-![1553063657651](C:\Users\绪志\AppData\Roaming\Typora\typora-user-images\1553063657651.png)
+[![1553063657651f3b54.png](https://miao.su/images/2019/03/21/1553063657651f3b54.png)](https://miao.su/image/V6QEH)
 
 ### Shrio主要模块说明
 
@@ -40,9 +40,9 @@ Apache Shiro是一个强大而灵活的开源安全框架，他干净利落的�
 
 ### Shiro 架构图
 
-![1553064696851](C:\Users\绪志\AppData\Roaming\Typora\typora-user-images\1553064696851.png)
+[![1553064696851f6d03.png](https://miao.su/images/2019/03/21/1553064696851f6d03.png)](https://miao.su/image/V6gZb)
 
-![1553064745652](C:\Users\绪志\AppData\Roaming\Typora\typora-user-images\1553064745652.png)
+[![15530647456524c4c9.png](https://miao.su/images/2019/03/21/15530647456524c4c9.png)](https://miao.su/image/V6n3R)
 
 ### Shiro所需要的Jar包
 
@@ -129,7 +129,7 @@ public void test1(){
 
 ### 身份认证流程
 
-![1553066655327](C:\Users\绪志\AppData\Roaming\Typora\typora-user-images\1553066655327.png)
+[![155306665532743719.png](https://miao.su/images/2019/03/21/155306665532743719.png)](https://miao.su/image/VX04w)
 
 流程如下
 
@@ -205,7 +205,7 @@ org.apache.shiro.authz.UnauthorizedException: Subject does not have role [admmin
 
 ### 授权流程
 
-![1553073989351](C:\Users\绪志\AppData\Roaming\Typora\typora-user-images\1553073989351.png)
+[![1553073989351f541b.png](https://miao.su/images/2019/03/21/1553073989351f541b.png)](https://miao.su/image/VX4q7)
 
 流程如下：
 
