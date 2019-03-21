@@ -2,6 +2,7 @@ package pro.zyyz.shiro;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.junit.Test;
@@ -12,6 +13,18 @@ public class CustomRealmDemo {
     @Test
     public void customRealmTest(){
         CustomRealm customRealm = new CustomRealm();
+
+        //设置 md5 加密，加密次数为 1
+        HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
+
+        //设置加密类型，可选md5、sh1 等
+        matcher.setHashAlgorithmName("md5");
+
+        //设置加密次数
+        matcher.setHashIterations(1);
+
+        //将加密操作添加到相应的Realm中
+        customRealm.setCredentialsMatcher(matcher);
 
         DefaultSecurityManager defaultSecurityManager = new DefaultSecurityManager();
 
