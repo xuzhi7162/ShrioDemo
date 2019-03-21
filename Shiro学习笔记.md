@@ -457,6 +457,159 @@ public void customRealmTest(){
 }
 ```
 
+## Shiro加密
+
+### MD5加密并设置盐值
+
+```java
+package pro.zyyz.realm;
+
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+public class CustomRealm extends AuthorizingRealm {
+
+    //模拟数据库，并初始化数据 =》 用户表
+    private Map<String , String> users = new HashMap<>();
+    {
+        //设置的用户密码为进行md5加密并增加盐值之后的密码
+        users.put("xuzhi","753b4e3ac73d7217e1d31ed6bb1a36aa");
+    }
+
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+
+        String username = (String)authenticationToken.getPrincipal();
+
+        String password = queryPasswordByUsername( username );
+
+        if(password == null){
+            return null;
+        }
+
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo( username, password, "CustomRealm");
+
+        //设置盐值
+        authenticationInfo.setCredentialsSalt(ByteSource.Util.bytes("xuzhi"));
+
+        return authenticationInfo;
+    }
+
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+
+        String username = (String)principalCollection.getPrimaryPrincipal();
+
+        //获得用户角色信息
+        Set<String> userRoles = queryRolesByUsername( username );
+
+        //获得用户权限信息
+        Set<String> userPermissions = queryPermissionByUsername( username );
+
+        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+
+        simpleAuthorizationInfo.addRoles( userRoles );
+
+        simpleAuthorizationInfo.addStringPermissions( userPermissions );
+
+        return simpleAuthorizationInfo;
+    }
+
+    //模拟数据库查询用户权限表
+    private Set<String> queryPermissionByUsername(String username) {
+        Set<String> userPermissions = new HashSet<>();
+        userPermissions.add("user:delete");
+        userPermissions.add("user:update");
+        return userPermissions;
+    }
+
+    //模拟数据库查询用户角色表
+    private Set<String> queryRolesByUsername(String username) {
+        Set<String> userRoles = new HashSet<>();
+        userRoles.add("admin");
+        userRoles.add("user");
+        return userRoles;
+    }
+
+    //模拟数据库查询操作
+    private String queryPasswordByUsername(String username){
+        String password = users.get( username );
+        return password;
+    }
+
+
+    public static void main(String[] args){
+        Md5Hash md5Hash = new Md5Hash("123","xuzhi");
+        System.out.println(md5Hash.toString());
+    }
+}
+
+```
+
+```java
+package pro.zyyz.shiro;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.subject.Subject;
+import org.junit.Test;
+import pro.zyyz.realm.CustomRealm;
+
+public class CustomRealmDemo {
+
+    @Test
+    public void customRealmTest(){
+        CustomRealm customRealm = new CustomRealm();
+
+        //设置 md5 加密，加密次数为 1
+        HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
+        matcher.setHashAlgorithmName("md5");
+        matcher.setHashIterations(1);
+        customRealm.setCredentialsMatcher(matcher);
+
+        DefaultSecurityManager defaultSecurityManager = new DefaultSecurityManager();
+
+        defaultSecurityManager.setRealm(customRealm);
+
+        SecurityUtils.setSecurityManager( defaultSecurityManager );
+
+        Subject subject = SecurityUtils.getSubject();
+
+        UsernamePasswordToken token = new UsernamePasswordToken("xuzhi", "123");
+
+        subject.login( token );
+
+        if(subject.isAuthenticated()){
+            System.out.println("用户登录成功");
+        }
+
+        //测试用户是否具有 admin 角色信息
+        if(subject.hasRole("admin")){
+            System.out.println("该用户拥有该角色");
+        }
+
+        //测试用户是否有 user:delete 权限，如果没有则抛出异常
+        subject.checkPermission("user:delete");
+    }
+}
+
+```
+
 
 
 
